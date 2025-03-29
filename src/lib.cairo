@@ -1,3 +1,7 @@
+mod math_utils;
+
+use math_utils::MathUtils;
+
 fn main() {
     // Function calls (Uncomment to execute them)
     // say_name("Sylvia Nnoruka!");
@@ -10,6 +14,25 @@ fn main() {
     
     // check_u16(6553); // Uncomment if needed
     is_greater_than_50(3);
+    // / Function calls from math_utils module
+    let x = 10;
+    let y = 5;
+    let sub = MathUtils::subtract_numbers(x, y);
+    let div = MathUtils::divide_numbers(x, y);
+    let mul = MathUtils::multiply_numbers(x, y);
+    let even = MathUtils::is_even_or_odd(x, y);
+    let odd = MathUtils::is_odd(x);
+    let pos = MathUtils::is_positive(-5);
+    let max = MathUtils::is_max(x, y);
+
+    // Outputs
+    println!("Subtraction: {}", sub);
+    println!("Division: {}", div);
+    println!("Multiplication: {}", mul);
+    println!("Is even: {}", even);
+    println!("Is odd: {}", odd);
+    println!("Is positive: {}", pos);
+    println!("Max: {}", max);
 }
 
 // DATA TYPES IN CAIRO
