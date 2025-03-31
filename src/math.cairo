@@ -46,13 +46,13 @@ pub mod math_operations {
 
     // Function to determine the sign of a number
     // Returns 1 for positive numbers, -1 for negative numbers, and 0 for zero
-    pub fn number_sign(a: i8) -> i8 {
+    pub fn number_sign(a: i8) {
         if a > 0 {
-            return 1;
+            println!("the number {} is positive", a);
         } else if a < 0 {
-            return -1;
+            println!("the number {} is negative", a);
         } else {
-            return 0;
+            println!("the number {} is zero", a);
         }
     }
 

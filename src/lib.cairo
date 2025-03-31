@@ -14,8 +14,7 @@ fn main() {
     let product = multiply(a, b); // Calculate multiplication
     let division = divide(a, b); // Calculate division
     let even = even_or_odd_sum(0, 2); // Check if sum is even
-    let odd = is_odd(b); // Check if number is odd
-    let sign = number_sign(c); // Determine the sign of a number
+    let odd = is_odd(b); // Check if number is odd   
     let max = max_of_two(a, b); // Find the maximum of two numbers
 
     // Print results
@@ -25,6 +24,6 @@ fn main() {
     println!("The division result is {}", division);
     println!("The even or odd result is {}", even);
     println!("The result is odd: {}", odd);
-    println!("The sign number is {}", sign);
+    number_sign(c); // Determine the sign of a number
     println!("The max result is {}", max);
 }
