@@ -10,6 +10,23 @@ fn main() {
     
     // check_u16(6553); // Uncomment if needed
     is_greater_than_50(3);
+    even_or_odd_sum(4, 6);
+    even_or_odd_sum(3, 4);
+    odd_number_checker(5);
+    let difference = subtraction(num_2, num_1);
+    println!("The difference between {num_1} and {num_2} is: {}", difference);
+
+    let product = multiplication(num_1, num_2);  
+     println!("The product of {num_1} and {num_2} is: {}", product);  
+
+    let max_number = max_number(num_1, num_2);
+    println!("The max btw {num_1} and {num_2} is: {}", max_number); 
+
+    sign_checker(5);
+    sign_checker(0);
+    sign_checker(-10);
+
+
 }
 
 // DATA TYPES IN CAIRO
@@ -50,3 +67,63 @@ fn is_greater_than_50(x: u32) -> bool {
     println!("false");
     return false;
 }
+fn even_or_odd_sum(x:u8, y:u8){
+    let sum = x + y;
+    let check = sum % 2;
+
+    if (check == 1){
+        println!("The sum of {x} and {y} is odd");
+    }else{
+        println!("The sum of {x} and {y} is even");
+    }
+}
+fn odd_number_checker(y:u8){
+    let check = y % 2;
+
+    if (check == 1){
+        println!("The number of {y} is odd");
+    }else{
+        println!("The number of {y} is not odd");
+    }
+}
+
+
+fn subtraction(x:u8, y:u8) -> u8{
+    assert!(x > y, "Invalid valuess");
+    let diff = x - y;
+    return diff;
+    // println!("The difference between {x} and {y} is: {}", total);
+}
+
+fn division(x:u8, y:u8) -> u8{
+    assert!(y > 0, "should be greater than 0");
+    let result = x / y;
+    return result;
+    // println!("The divison of {x} by {y} is: {}", result);
+}
+
+fn multiplication(x:u8, y:u8) -> u8{
+    let result = x * y;
+    return result;
+    // println!("The product of {x} and {y} is: {}", result);
+}
+
+fn max_number(x:u8, y:u8)-> u8{
+    if (y > x){
+        return y;
+    } else {
+        return x; 
+    }
+}
+
+fn sign_checker(x: i32){
+    if (x > 0){
+        println!("the number is positive");
+    }else if(x < 0){
+        println!("the number is negative");
+    }else{
+        println!("The number is zero");
+    }
+}
+
+
