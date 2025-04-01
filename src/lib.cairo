@@ -1,18 +1,11 @@
 mod arithmetic_operation;
-use crate::arithmetic_operation::operation::sum_num;
-use crate::arithmetic_operation::operation::multiply_num;
-use crate::arithmetic_operation::operation::subtract_num;
-use crate::arithmetic_operation::operation::divide_num;
-use crate::arithmetic_operation::operation::is_even;
-use crate::arithmetic_operation::operation::is_odd;
-use crate::arithmetic_operation::operation::isEven_or_isOdd;
-use crate::arithmetic_operation::operation::even_numbers;
-use crate::arithmetic_operation::operation::is_greater_than_50;
-
+use crate::arithmetic_operation::operation::{
+    divide_num, even_numbers, isEven_or_isOdd, is_even, is_greater_than_50, is_odd, multiply_num,
+    subtract_num, sum_num,
+};
 
 
 fn main() {
-    
     // sum two u8 integer
     let sum = sum_num(5, 8);
     println!("the sum of {}", sum);
@@ -26,36 +19,31 @@ fn main() {
     let subtraction = subtract_num(10, 5);
     println!("the subtraction of {}", subtraction);
 
-
     // divide two u8 integers
 
     let division = divide_num(10, 2);
     println!("the division of {}", division);
 
-    // check for even number 
+    // check for even number
 
     let even = is_even(9);
     println!("the even number {}", even);
 
-      // check for odd number 
+    // check for odd number
     let even = is_odd(9);
     println!("the odd number {}", even);
 
-     // check for even or odd number 
-     let isEven = isEven_or_isOdd(6);
-     println!("the number is {}", isEven);
+    // check for even or odd number
+    let isEven = isEven_or_isOdd(6);
+    println!("the number is {}", isEven);
 
-      // check for the sum  even or odd number 
-      let isOdd = even_numbers(5, 8);
-      println!("the number is {}", isOdd);
+    // check for the sum  even or odd number
+    let isOdd = even_numbers(5, 8);
+    println!("the number is {}", isOdd);
 
-        // to check greater than 50 
+    // to check greater than 50
 
-        let greater = is_greater_than_50(55);
-        println!("the number is {}", greater);
-
+    let greater = is_greater_than_50(55);
+    println!("the number is {}", greater);
 }
-
-
-
 
