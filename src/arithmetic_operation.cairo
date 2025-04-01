@@ -5,13 +5,13 @@ pub mod operation {
     }
 
 
-    // Function to add  two u8 integers
+    // Function to add   u8 integers
     pub fn multiply_num(x: u8, y: u8) -> u8 {
         return x * y;
     }
 
 
-    // Function to subtract  two u8 integers
+    // Function to subtract   u8 integers
     pub fn subtract_num(x: u8, y: u8) -> u8 {
         return x - y;
     }
