@@ -1,54 +1,25 @@
-/// Interface representing `HelloContract`.
-/// This interface allows modification and retrieval of the contract count.
-#[starknet::interface]
-pub trait ICounter<TContractState> {
-    /// Increase contract count.
-    fn increase_count(ref self: TContractState, amount: felt252);
-    /// Increase contract count by one
-    fn increase_count_by_one(ref self: TContractState);
+mod mod_math;
+use mod_math::ModMath;
 
-    /// Decrease contract count.
-    fn decrease_count(ref self: TContractState, amount: felt252);
+fn main() {
+    let a = 21;
+    let b = 4;
+    let sub = ModMath::subtract_numbers(a, b);
+    let mul = ModMath::multiply_numbers(a, b);
+    let div = ModMath::divide_numbers(a, b);
+    let even_or_odd = ModMath::even_or_odd_sum(a, b);
+    let first_odd_num = ModMath::first_num_is_odd(a);
+    let second_odd_num = ModMath::second_num_is_odd(b);
+    let positive_num = ModMath::positive_number(a);
+    let max_num = ModMath::num_is_max(a,b);
 
-    /// Decrease contract count.
-    fn decrease_count_by_one(ref self: TContractState);
-    /// Retrieve contract count.
-    fn get_count(self: @TContractState) -> felt252;
-}
-
-/// Simple contract for managing count.
-#[starknet::contract]
-mod Counter {
-    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-
-    #[storage]
-    struct Storage {
-        count: felt252,
-    }
-
-    #[abi(embed_v0)]
-    impl CounterImpl of super::ICounter<ContractState> {
-        fn increase_count(ref self: ContractState, amount: felt252) {
-            assert(amount != 0, 'Amount cannot be 0');
-            self.count.write(self.count.read() + amount);
-        }
-
-        fn increase_count_by_one(ref self: ContractState) {
-            self.count.write(self.count.read() + 1);
-        }
-
-
-        fn decrease_count(ref self: ContractState, amount: felt252) {
-            assert(amount != 0, 'Amount cannot be 0');
-            self.count.write(self.count.read() - amount);
-        }
-
-        fn decrease_count_by_one(ref self: ContractState) {
-            self.count.write(self.count.read() - 1);
-        }
-
-        fn get_count(self: @ContractState) -> felt252 {
-            self.count.read()
-        }
-    }
+    //Output
+    println!("Subtraction: {}", sub);
+    println!("Multiplication: {}", mul);
+    println!("Division: {}", div);
+    println!("Sum_is_Even:{}", even_or_odd);
+    println!("First_Number_is_Odd:{}", first_odd_num);
+    println!("Second_Number_is_Odd:{}", second_odd_num);
+    println!("Positive_Number:{}", positive_num);
+    println!("Maximum_Number:{}", max_num);
 }
