@@ -31,9 +31,12 @@ fn main() {
 
     // calling div_num
     let num1 = 20;
-    let num2 = 3;
+    let num2 = 0;
     let div = div_num(num1, num2);
-    println!("The division of {} and {} is = {}", num1, num2, div);
+    match div {
+        Option::Some(value) => println!("The division of {} and {} is = {}", num1, num2, value),
+        Option::None => println!("The division of {} and {} is not possible", num1, num2),
+    }
     println!("");
 
     // callint even or odd sum
@@ -120,8 +123,15 @@ fn mul_num(x: u8, y: u8) -> u8 {
     return x * y;
 }
 // - performs division of two numbers
-fn div_num(x: u8, y: u8) -> u8 {
-    return x / y;
+fn div_num(x: u8, y: u8) -> Option<u8> {
+    if y == 0{
+        println!("Error: Division by zero is not allowed");
+        return Option::None;
+    } else if x == 0{
+        println!("Error: Division by zero is not allowed");
+        return Option::None;
+    } 
+    return Option::Some(x / y);
 }
 
 //  2 EVEN OR ODD SUM
