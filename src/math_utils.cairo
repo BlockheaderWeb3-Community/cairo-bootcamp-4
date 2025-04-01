@@ -34,11 +34,13 @@ pub mod MathUtils {
         }
     }
     // function to check if a number is positive
-    pub fn is_positive(x: i8) -> bool {
+    pub fn is_positive(x: i8) -> ByteArray {
         if x > 0 {
-            return true;
+            return "positive";
+        } else if x == 0 {
+            return "zero";
         } else {
-            return false;
+            return "negative";
         }
     }
     // function to check the maximum of two numbers
