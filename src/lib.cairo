@@ -1,4 +1,37 @@
+mod arithmetic;
+mod evenChecker;
+mod oddNumber;
+mod maxNumber;
+
+
+use crate::arithmetic::logic::div_operation;
+use crate::evenChecker::even_logic::even_checker;
+use crate::oddNumber::odd_checker::odd_number_checker;
+use crate::maxNumber::max::max_two_number;
+
+
 fn main() {
+
+    
+    
+    
+        let divsion = div_operation(8, 2);
+        println!("The result is {}", divsion);
+    
+    
+        let checker = even_checker(7, 2);
+        println!("this is a {} number", checker);
+    
+        let come = odd_number_checker(5);
+        println!("{}", come);
+    
+    
+        let MAX = max_two_number(5, 7);
+        println!("{} is the maximum number", MAX);
+    
+
+
+
     // Function calls (Uncomment to execute them)
     // say_name("Sylvia Nnoruka!");
     // intro_to_felt();
