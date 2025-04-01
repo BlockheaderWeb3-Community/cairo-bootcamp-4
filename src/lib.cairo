@@ -1,52 +1,28 @@
+mod arithmetic_operations;
+mod even_or_odd_checker;
+mod basic_logic_functions;
+
+    
+
+use crate::arithmetic_operations::subtract;
+use crate::basic_logic_functions::max_num;
+use crate::even_or_odd_checker::even_or_odd_sum;
+
 fn main() {
-    // Function calls (Uncomment to execute them)
-    // say_name("Sylvia Nnoruka!");
-    // intro_to_felt();
-    
-    let num_1 = 5;
-    let num_2 = 10;
-    let sum = sum_num(num_1, num_2);
-    println!("The sum of {} and {} is = {}", num_1, num_2, sum);
-    
-    // check_u16(6553); // Uncomment if needed
-    is_greater_than_50(3);
+    let sub = subtract(3, 5);
+    let multiply = arithmetic_operations::multiplication(5, 6);
+    let div = arithmetic_operations::division(5, 10);
+    let max_number = max_num(2, 4);
+    let checker = basic_logic_functions::sign_checker(6);
+    let odd = even_or_odd_checker::is_odd(9);
+    let sum_check = even_or_odd_sum::even_odd_sum(3, 7);
+
+    println!("the result of subtraction is {}", sub);
+    println!("the result of multiplication is {}", multiply);
+    println!("the result of the division is {}", div);
+    println!("the max number is {}", max_number);
+    println!("the number is {}", checker);
+    println!("is_odd is {}", odd);
+    println!("the sum is {}", sum_check);
 }
 
-// DATA TYPES IN CAIRO
-// - felts: felt252 (Field elements)
-// - ByteArray: Represents a sequence of bytes
-// - Integers:
-//   - Signed: i8, i16, i32, i64, i128, i256
-//   - Unsigned: u8, u16, u32, u64, u128, u256
-// - Boolean: bool
-
-// Function to demonstrate ByteArray usage
-fn say_name(x: ByteArray) {
-    println!("{}", x);
-}
-
-// Function to demonstrate felt252 usage
-fn intro_to_felt() {
-    let x = 40000;
-    println!("{}", x);
-}
-
-// Function to sum two u8 integers
-fn sum_num(x: u8, y: u8) -> u8 {
-    return x + y;
-}
-
-// Function to print a u16 integer
-fn check_u16(x: u16) {
-    println!("{x}");
-}
-
-// Function to check if a u32 integer is greater than 50
-fn is_greater_than_50(x: u32) -> bool {
-    if x > 50 {
-        println!("true");
-        return true;
-    }
-    println!("false");
-    return false;
-}
