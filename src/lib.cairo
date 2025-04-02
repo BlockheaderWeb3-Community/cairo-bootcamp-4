@@ -1,52 +1,86 @@
 fn main() {
-    // Function calls (Uncomment to execute them)
-    // say_name("Sylvia Nnoruka!");
-    // intro_to_felt();
-    
-    let num_1 = 5;
-    let num_2 = 10;
-    let sum = sum_num(num_1, num_2);
-    println!("The sum of {} and {} is = {}", num_1, num_2, sum);
-    
-    // check_u16(6553); // Uncomment if needed
-    is_greater_than_50(3);
-}
+    let multiply = multiplication(2, 10);
+    let div = division(0, 2);
+    let checker = sign_checker(6);
+    let odd = is_odd(3);
+    let max = max_num(6, 7);
+    let even_or_odd = even_odd_sum(3, 6);
+    let sub = subtraction(10, 2);
 
-// DATA TYPES IN CAIRO
-// - felts: felt252 (Field elements)
-// - ByteArray: Represents a sequence of bytes
-// - Integers:
-//   - Signed: i8, i16, i32, i64, i128, i256
-//   - Unsigned: u8, u16, u32, u64, u128, u256
-// - Boolean: bool
+    println!("multiplication is equal to {}", multiply);
+    println!("checker is equal to {}", checker);
+    println!("odd is equal to {}", odd);
+    println!("max is equal to {}", max);
+    println!("even_or_odd is equal to {}", even_or_odd);
+    println!("sub is equal to {}", sub);
 
-// Function to demonstrate ByteArray usage
-fn say_name(x: ByteArray) {
-    println!("{}", x);
-}
-
-// Function to demonstrate felt252 usage
-fn intro_to_felt() {
-    let x = 40000;
-    println!("{}", x);
-}
-
-// Function to sum two u8 integers
-fn sum_num(x: u8, y: u8) -> u8 {
-    return x + y;
-}
-
-// Function to print a u16 integer
-fn check_u16(x: u16) {
-    println!("{x}");
-}
-
-// Function to check if a u32 integer is greater than 50
-fn is_greater_than_50(x: u32) -> bool {
-    if x > 50 {
-        println!("true");
-        return true;
+    match div {
+        Option::Some(value) => println!("answer is {}", value),
+        Option::None => println!("this is an error operation"),
     }
-    println!("false");
-    return false;
 }
+
+
+// this function subtracts between two numbers
+pub fn subtraction(x: u128, y: u128) -> u128 {
+    return x - y;
+}
+
+// this function multipli_es two numbers
+pub fn multiplication(x: i16, y: i16) -> i16 {
+    return x * y;
+}
+
+// this function divides two numbers
+pub fn division(x: i16, y: i16) -> Option<i16> {
+    if y == 0 {
+        return Option::None;
+    } else if x == 0 {
+        return Option::None;
+    } else {
+        return Option::Some(x / y);
+    }
+}
+
+// thi function checks if a number is positive, negative, or equal to zero
+pub fn sign_checker(x: i16) -> ByteArray {
+    let num = x;
+    if num > 0 {
+        return "positive";
+    } else if num < 0 {
+        return "negative";
+    } else {
+        return "zero";
+    }
+}
+
+// this function picks the maximum number between two numbers
+pub fn max_num(x: i16, y: i16) -> i16 {
+    if x > y {
+        return x;
+    } else {
+        return y;
+    }
+}
+
+// pub is used to make a mod or function public andvisible to parent functions
+// pub mod even_or_odd_sum;
+
+// this function determines whether a value is odd or not
+pub fn is_odd(x: i16) -> bool {
+    return x % 2 != 0;
+}
+
+
+// this function checksif the result of the sum of two numbers is even or odd
+pub fn even_odd_sum(x: i16, y: i16) -> ByteArray {
+    let add = x + y;
+    let odd = is_odd(add);
+    let res = true;
+    if odd == res {
+        return "odd";
+    } else {
+        return "even";
+    }
+}
+
