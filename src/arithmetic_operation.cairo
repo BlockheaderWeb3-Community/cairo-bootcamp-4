@@ -45,6 +45,7 @@ pub mod operation {
     pub fn even_numbers(x: u8, y: u8) -> bool {
         if (x + y) % 2 == 0 {
             println!("Even");
+
             return true;
         }
         println!("odd");
@@ -61,18 +62,40 @@ pub mod operation {
         return false;
     }
 
+    //  to check for positive and negative
 
-    fn say_name(x: ByteArray) {
-        println!("{}", x);
+    pub fn sign_check(x: i8) -> bool {
+        if x > 0 {
+            println!("The number {} is Positive", x);
+            return true;
+        } else if x < 0 {
+            println!("The number {} is Negative", x);
+            return false;
+        }
+        println!("the number is Zero");
+        return false;
     }
-    // Function to demonstrate felt252 usage
-    fn intro_to_felt() {
-        let x = 40000;
-        println!("{}", x);
+
+    // Maximum of two numbers
+    pub fn maximum_numb(x: u8, y: u8) -> u8 {
+        if x > y {
+            return x;
+        }
+        return y;
     }
-    // Function to print a u16 integer
-    fn check_u16(x: u16) {
-        println!("{x}");
-    }
+}
+
+
+fn say_name(x: ByteArray) {
+    println!("{}", x);
+}
+// Function to demonstrate felt252 usage
+fn intro_to_felt() {
+    let x = 40000;
+    println!("{}", x);
+}
+// Function to print a u16 integer
+fn check_u16(x: u16) {
+    println!("{x}");
 }
 

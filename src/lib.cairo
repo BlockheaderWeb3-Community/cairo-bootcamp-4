@@ -1,7 +1,7 @@
 mod arithmetic_operation;
 use crate::arithmetic_operation::operation::{
-    divide_num, even_numbers, isEven_or_isOdd, is_even, is_greater_than_50, is_odd, multiply_num,
-    subtract_num, sum_num,
+    divide_num, even_numbers, isEven_or_isOdd, is_even, is_greater_than_50, is_odd, maximum_numb,
+    multiply_num, sign_check, subtract_num, sum_num,
 };
 
 
@@ -37,7 +37,7 @@ fn main() {
     let isEven = isEven_or_isOdd(6);
     println!("the number is {}", isEven);
 
-    // check for the sum  even or odd number
+    // check for  sum  even or odd number
     let isOdd = even_numbers(5, 8);
     println!("the number is {}", isOdd);
 
@@ -45,5 +45,17 @@ fn main() {
 
     let greater = is_greater_than_50(55);
     println!("the number is {}", greater);
+
+    // to check sign
+    let numb = 078;
+    sign_check(numb);
+    println!("");
+
+    // to call maximum number
+    let num1 = 25;
+    let num2 = 30;
+    let max = maximum_numb(num1, num2);
+    println!("The maximum of {} and {} is = {}", num1, num2, max);
+    println!("");
 }
 
