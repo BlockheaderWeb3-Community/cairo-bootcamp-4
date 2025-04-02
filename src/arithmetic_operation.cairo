@@ -94,7 +94,7 @@ fn intro_to_felt() {
     let x = 40000;
     println!("{}", x);
 }
-// Function to print a u16 integer
+// Function to print  u16 integer
 fn check_u16(x: u16) {
     println!("{x}");
 }
