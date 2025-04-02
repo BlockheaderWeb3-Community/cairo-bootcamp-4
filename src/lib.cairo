@@ -1,46 +1,39 @@
 mod arithmetic;
+mod comparism;
 mod evenChecker;
-mod oddNumber;
 mod maxNumber;
-
-
+mod oddNumber;
 use crate::arithmetic::logic::div_operation;
+use crate::comparism::compare::comparism_operator;
 use crate::evenChecker::even_logic::even_checker;
-use crate::oddNumber::odd_checker::odd_number_checker;
 use crate::maxNumber::max::max_two_number;
+use crate::oddNumber::odd_checker::odd_number_checker;
 
 
 fn main() {
+    let divsion = div_operation(8, 2);
+    println!("The result is {}", divsion);
 
-    
-    
-    
-        let divsion = div_operation(8, 2);
-        println!("The result is {}", divsion);
-    
-    
-        let checker = even_checker(7, 2);
-        println!("this is a {} number", checker);
-    
-        let come = odd_number_checker(5);
-        println!("{}", come);
-    
-    
-        let MAX = max_two_number(5, 7);
-        println!("{} is the maximum number", MAX);
-    
+    let checker = even_checker(7, 2);
+    println!("this is a {} number", checker);
 
+    let come = odd_number_checker(5);
+    println!("{}", come);
 
+    let MAX = max_two_number(5, 7);
+    println!("{} is the maximum number", MAX);
+
+    comparism_operator(4);
 
     // Function calls (Uncomment to execute them)
     // say_name("Sylvia Nnoruka!");
     // intro_to_felt();
-    
+
     let num_1 = 5;
     let num_2 = 10;
     let sum = sum_num(num_1, num_2);
     println!("The sum of {} and {} is = {}", num_1, num_2, sum);
-    
+
     // check_u16(6553); // Uncomment if needed
     is_greater_than_50(3);
 }
