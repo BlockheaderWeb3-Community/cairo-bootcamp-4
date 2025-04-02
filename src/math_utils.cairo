@@ -6,7 +6,7 @@ pub mod MathUtils {
 
     // function to divide two numbers
     pub fn divide_numbers(x: u8, y: u8) -> u8 {
-        if x/y == 0 {
+        if y == 0 {
             return 0;
         }else {
             return x / y;
