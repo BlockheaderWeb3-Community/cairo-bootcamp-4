@@ -1,54 +1,35 @@
-/// Interface representing `HelloContract`.
-/// This interface allows modification and retrieval of the contract count.
-#[starknet::interface]
-pub trait ICounter<TContractState> {
-    /// Increase contract count.
-    fn increase_count(ref self: TContractState, amount: felt252);
-    /// Increase contract count by one
-    fn increase_count_by_one(ref self: TContractState);
+// relative files directory
+mod arithmetic_operations;
+mod even_or_odd_checker;
+mod basic_logic_functions;
+    
+// importing all files and folders to be used
+use crate::arithmetic_operations::subtract;
+use crate::basic_logic_functions::max_num;
+use crate::even_or_odd_checker::even_or_odd_sum;
 
-    /// Decrease contract count.
-    fn decrease_count(ref self: TContractState, amount: felt252);
+fn main() {
+    // INITIALIZING AND ASSIGNING VARIABLES TO THE FUNCTIONS
+    let sub = subtract(3, 5);
+    let multiply = arithmetic_operations::multiplication(5, 6);
+    let div = arithmetic_operations::division(20, 0);
+    let max_number = max_num(2, 4);
+    let checker = basic_logic_functions::sign_checker(6);
+    let odd = even_or_odd_checker::is_odd(9);
+    let sum_check = even_or_odd_sum::even_odd_sum(3, 7);
 
-    /// Decrease contract count.
-    fn decrease_count_by_one(ref self: TContractState);
-    /// Retrieve contract count.
-    fn get_count(self: @TContractState) -> felt252;
+    //*********** PRINTING TO CONSOLE ************
+    println!("the result of subtraction is {}", sub);
+    println!("the result of multiplication is {}", multiply);
+
+    // use match "function name" to implement the error handling function 
+    match div {
+        Option::Some(value) => println!("the result is {}", value),
+        Option::None => println!("Error: cannot divide by 0"),
+    }
+    println!("the max number is {}", max_number);
+    println!("the number is {}", checker);
+    println!("is_odd is {}", odd);
+    println!("the sum is {}", sum_check);
 }
 
-/// Simple contract for managing count.
-#[starknet::contract]
-mod Counter {
-    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-
-    #[storage]
-    struct Storage {
-        count: felt252,
-    }
-
-    #[abi(embed_v0)]
-    impl CounterImpl of super::ICounter<ContractState> {
-        fn increase_count(ref self: ContractState, amount: felt252) {
-            assert(amount != 0, 'Amount cannot be 0');
-            self.count.write(self.count.read() + amount);
-        }
-
-        fn increase_count_by_one(ref self: ContractState) {
-            self.count.write(self.count.read() + 1);
-        }
-
-
-        fn decrease_count(ref self: ContractState, amount: felt252) {
-            assert(amount != 0, 'Amount cannot be 0');
-            self.count.write(self.count.read() - amount);
-        }
-
-        fn decrease_count_by_one(ref self: ContractState) {
-            self.count.write(self.count.read() - 1);
-        }
-
-        fn get_count(self: @ContractState) -> felt252 {
-            self.count.read()
-        }
-    }
-}
