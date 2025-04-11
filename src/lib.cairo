@@ -71,7 +71,7 @@ pub mod SimpleBank {
     pub struct AccountClosed {
         address: ContractAddress,
         recipient: ContractAddress,
-        final_balance: u128,
+        recipient_balance: u128,
     }
 
     #[abi(embed_v0)]
@@ -150,10 +150,9 @@ pub mod SimpleBank {
 
             // Transfer remaining balance if any
             let balance = self.balances.read(address);
+            let recipient_balance = self.balances.read(recipient);
             if balance > 0 {
-                let recipient_balance = self.balances.read(recipient);
-                self.balances.write(recipient, recipient_balance + balance);
-                self.balances.write(address, 0);
+                self.transfer(balance, recipient)
             }
 
             // Mark account as closed
@@ -162,9 +161,7 @@ pub mod SimpleBank {
             // Emit event
             self
                 .emit(
-                    Event::AccountClosed(
-                        AccountClosed { address, recipient, final_balance: balance },
-                    ),
+                    Event::AccountClosed(AccountClosed { address, recipient, recipient_balance }),
                 );
         }
 
