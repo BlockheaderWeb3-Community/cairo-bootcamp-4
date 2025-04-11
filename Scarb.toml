@@ -12,7 +12,7 @@ starknet = "2.11.2"
 enable-gas = true
 
 [dev-dependencies]
-cairo_test = "2.11.2"
+#cairo_test = "2.11.2"
 # cairo_execute = "2.11.3"
 assert_macros = "2.11.2"
 snforge_std = "0.40.0"
