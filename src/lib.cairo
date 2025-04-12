@@ -1,52 +1,32 @@
+// Importing then
+
+mod arithmetic_operations;
+mod basic_logic_functions;
+mod even_and_odd;
+
+// Importing then
+use arithmetic_operations::{subtract, multiply, divide};
+use basic_logic_functions::{sign_checker, larger_num};
+use even_and_odd::{is_sum_even, is_odd};
+
+
+
 fn main() {
-    // Function calls (Uncomment to execute them)
-    // say_name("Sylvia Nnoruka!");
-    // intro_to_felt();
-    
-    let num_1 = 5;
-    let num_2 = 10;
-    let sum = sum_num(num_1, num_2);
-    println!("The sum of {} and {} is = {}", num_1, num_2, sum);
-    
-    // check_u16(6553); // Uncomment if needed
-    is_greater_than_50(3);
+    // using imported functions in my main file
+    is_sum_even(4, 7);
+    is_odd(3);
+    sign_checker(-3);
+    larger_num(2, 6);
+    let sub_res: i32 = subtract(9, 1);
+    println!("subtraction result: {sub_res}");
+
+    let mul_res = multiply(15, 2);
+    println!("multiplication result: {mul_res}");
+
+    divide(3, 10);
+  
 }
 
-// DATA TYPES IN CAIRO
-// - felts: felt252 (Field elements)
-// - ByteArray: Represents a sequence of bytes
-// - Integers:
-//   - Signed: i8, i16, i32, i64, i128, i256
-//   - Unsigned: u8, u16, u32, u64, u128, u256
-// - Boolean: bool
 
-// Function to demonstrate ByteArray usage
-fn say_name(x: ByteArray) {
-    println!("{}", x);
-}
 
-// Function to demonstrate felt252 usage
-fn intro_to_felt() {
-    let x = 40000;
-    println!("{}", x);
-}
 
-// Function to sum two u8 integers
-fn sum_num(x: u8, y: u8) -> u8 {
-    return x + y;
-}
-
-// Function to print a u16 integer
-fn check_u16(x: u16) {
-    println!("{x}");
-}
-
-// Function to check if a u32 integer is greater than 50
-fn is_greater_than_50(x: u32) -> bool {
-    if x > 50 {
-        println!("true");
-        return true;
-    }
-    println!("false");
-    return false;
-}
