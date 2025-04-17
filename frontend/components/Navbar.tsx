@@ -78,11 +78,21 @@ export default function Navbar() {
 function ProfileBar({ address }: { address: string }) {
   const {disconnect} = useDisconnect()
 
+  // Helper function to truncate the address
+  const truncateAddress = (addr: string) => {
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
   return (
     <div className="flex items-center space-x-2 px-4 py-2 rounded-full border border-[#2d2f36] bg-[#1c1f26]">
       <UserCircle2 className="w-6 h-6 text-white" />
-
-      <button onClick={() => disconnect()}>disconnect</button>
+      <span className="text-white text-sm font-medium">{truncateAddress(address)}</span>
+      <button
+        onClick={() => disconnect()}
+        className="text-red-500 hover:underline text-sm font-medium"
+      >
+        Disconnect
+      </button>
     </div>
   );
 }
