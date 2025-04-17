@@ -46,14 +46,25 @@ export default function TodoList() {
     }
   };
 
+  // const deleteTodo = async (id: number) => {
+  //   const calls = contract?.populate("delete_todo", [id]);
+  //   if (calls) {
+  //     await sendAsync([calls]);
+  //     alert("Todo deleted successfully");
+  //   }
+
+  //   // delete todo
+  // };
+
   const deleteTodo = async (id: number) => {
+    // Remove the todo from the frontend
+    setTodos((prevTodos) => prevTodos?.filter((todo) => Number(todo.id) !== id));
+    // Optionally, send the delete request to the blockchain
     const calls = contract?.populate("delete_todo", [id]);
     if (calls) {
       await sendAsync([calls]);
       alert("Todo deleted successfully");
     }
-
-    // delete todo
   };
 
   const toggleStatus = async (id: number) => {
@@ -108,44 +119,48 @@ export default function TodoList() {
             <p className="text-center">Loading...</p>
           ) : (
             <ul className="space-y-5">
-              {todos &&
-                todos.map(({ status, text, id }, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between px-6 py-4 rounded-2xl bg-[#161b22] hover:shadow-lg transition-all duration-300 border border-transparent hover:border-[#5C94FF]"
+            {todos &&
+              todos.map(({ status, text, id }, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between px-6 py-4 rounded-2xl bg-[#161b22] hover:shadow-lg transition-all duration-300 border border-transparent hover:border-[#5C94FF]"
+                >
+                  <div
+                    className={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 cursor-pointer ${
+                      status == "completed"
+                        ? "text-gray-500 line-through"
+                        : "text-white font-medium"
+                    }`}
+                    onClick={() => toggleStatus(Number(id))}
                   >
-                    <div
-                      className={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 cursor-pointer ${
-                        status == "completed"
-                          ? "text-gray-500 line-through"
-                          : "text-white font-medium"
-                      }`}
-                      onClick={() => toggleStatus(Number(id))}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Circle className="text-[#5C94FF] w-5 h-5 shrink-0" />
-                        <span className="text-sm md:text-base">{text}</span>
-                      </div>
-
-                      <span
-                        className={`text-xs py-1 px-3 rounded-full font-semibold ${
-                          status == "completed"
-                            ? "bg-green-700 text-green-300"
-                            : "bg-yellow-700 text-yellow-300"
+                    <div className="flex items-center gap-3">
+                      <Circle
+                        className={`w-5 h-5 shrink-0 ${
+                          status == "completed" ? "text-green-500" : "text-[#5C94FF]"
                         }`}
-                      >
-                        {status}
-                      </span>
+                      />
+                      <span className="text-sm md:text-base">{text}</span>
                     </div>
 
-                    <button
-                      onClick={() => deleteTodo(index)}
-                      className="text-gray-400 hover:text-red-500 transition"
+                    <span
+                      className={`text-xs py-1 px-3 rounded-full font-semibold ${
+                        status == "completed"
+                          ? "bg-green-700 text-green-300"
+                          : "bg-yellow-700 text-yellow-300"
+                      }`}
                     >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </li>
-                ))}
+                      {status}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => deleteTodo(index)}
+                    className="text-gray-400 hover:text-red-500 transition"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </li>
+              ))}
             </ul>
           )}
         </div>
