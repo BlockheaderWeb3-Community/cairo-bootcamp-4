@@ -39,8 +39,8 @@ mod HelloStarknet {
         }
 
         fn add_and_subtract(ref self: ContractState, amount: felt252) {
-           self._add(amount); 
-           self._subtract(amount);
+            self._add(amount);
+            self._subtract(amount);
         }
     }
 
