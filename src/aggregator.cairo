@@ -50,7 +50,7 @@ mod Agggregator {
             let killswitch: IKillSwitchDispatcher = IKillSwitchDispatcher {
                 contract_address: self.killswitch.read(),
             };
-            assert(killswitch.get_status(), 'not active');
+            assert(killswitch.get_status(), 'should be active');
             ICounterDispatcher { contract_address: self.counter.read() }.increase_count(amount)
         }
 
