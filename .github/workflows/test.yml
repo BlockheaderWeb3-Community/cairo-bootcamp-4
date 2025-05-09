@@ -1,20 +1,30 @@
-name: Test Cohort 4 Contracts
-on:
-  push:
-  pull_request:
+name: Check, Build and Test Cohort 4 Contracts
+
+on: [push, pull_request]
+permissions: read-all
+
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Starknet Foundry
-        uses: foundry-rs/setup-snfoundry@v3
-
-      - name: Setup Scarb
-        uses: software-mansion/setup-scarb@v1
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
         with:
-          scarb-lock: ../../Scarb.lock
+          scarb-version: 2.11.4
+      - name: Check cairo format
+        run: scarb fmt --check
+      - name: Build cairo programs
+        run: scarb build
 
-      - name: Run tests
-        run: scarb build && scarb test
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: 2.11.4
+      - uses: foundry-rs/setup-snfoundry@v3
+        with:
+          starknet-foundry-version: 0.40.0
+      - name: Run cairo tests
+        run: snforge test
