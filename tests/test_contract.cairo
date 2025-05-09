@@ -115,6 +115,7 @@ fn test_decrease_count_by_one_aggregator() {
     assert(count_after == 19, 'incorrect count');
 }
 
+
 #[test]
 fn test_increase_activate_switch() {
     let (_, killswitch_dispatcher, aggregator_dispatcher) = deploy_contract();
@@ -130,7 +131,7 @@ fn test_increase_activate_switch() {
 
 #[test]
 #[should_panic(expect: 'Amount cannot be 0')]
-fn test_increase_count_by_zero() {
+fn test_increase_count_by_zero_aggregator() {
     let (_, _, aggregator_dispatcher) = deploy_contract();
 
     let count_after = aggregator_dispatcher.get_count();
@@ -148,4 +149,18 @@ fn test_increase_counter_count_error() {
     assert(status_before, 'invalid status');
 
     aggregator_dispatcher.increase_counter_count(42);
+}
+
+#[test]
+#[should_panic(expect: "Amount cannot be 0")]
+fn test_decrease_zero_count_by_one_aggregator() {
+    let (_, _, aggregator_dispatcher) = deploy_contract();
+
+    let count_after = aggregator_dispatcher.get_count();
+    assert(count_after == 0, 'invalid count');
+
+    aggregator_dispatcher.decrease_count_by_one();
+
+    let count_after = aggregator_dispatcher.get_count();
+    assert(count_after == 19, 'incorrect count');
 }
