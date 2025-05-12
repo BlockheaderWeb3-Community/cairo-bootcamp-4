@@ -1,0 +1,52 @@
+{
+  "name": "chase-the-bag",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "serve": "vite preview",
+    "format:check": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@dojoengine/core": "1.4.4",
+    "@dojoengine/create-burner": "1.4.4",
+    "@dojoengine/predeployed-connector": "1.4.4",
+    "@dojoengine/sdk": "1.4.4",
+    "@dojoengine/torii-client": "1.4.4",
+    "@dojoengine/torii-wasm": "1.4.4",
+    "@dojoengine/utils": "1.4.4",
+    "@starknet-react/chains": "^3.1.0",
+    "@starknet-react/core": "^3.6.2",
+    "@types/uuid": "^10.0.0",
+    "immer": "^10.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "starknet": "6.23.1",
+    "uuid": "^10.0.0",
+    "vite-plugin-wasm": "^3.4.1",
+    "zustand": "^4.5.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.20.1",
+    "eslint-plugin-react-hooks": "5.1.0-rc-fb9a90fa48-20240614",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^5.4.14",
+    "vite-plugin-top-level-await": "^1.5.0"
+  },
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
+}
