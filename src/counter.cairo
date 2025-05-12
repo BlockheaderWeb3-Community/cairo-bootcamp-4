@@ -37,7 +37,7 @@ mod Counter {
         }
 
         fn get_count(self: @ContractState) -> u32 {
-            self.count.read()   
+            self.count.read()
         }
     }
 }
