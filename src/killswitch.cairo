@@ -23,7 +23,6 @@ mod KillSwitch {
     #[abi(embed_v0)]
     impl KillSwitchImpl of super::IKillSwitch<ContractState> {
         fn switch(ref self: ContractState) {
-            // assert(amount != 0, 'Amount cannot be 0');
             self.status.write(!self.status.read());
         }
 

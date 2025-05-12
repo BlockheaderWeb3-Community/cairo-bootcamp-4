@@ -1,34 +1,59 @@
 #[starknet::interface]
 pub trait IAggregator<TContractState> {
-    /// Increase contract count.
+    // Increase contract count.
     fn increase_count(ref self: TContractState, amount: u32);
-    /// Increase contract count.
-    ///
+    // Increase counter count
     fn increase_counter_count(ref self: TContractState, amount: u32);
-
-    /// Retrieve contract count.
+    // Retrieve contract count.
     fn decrease_count_by_one(ref self: TContractState);
-    /// Retrieve contract count.
+    // Retrieve contract count.
     fn get_count(self: @TContractState) -> u32;
-
+    // Activate the switch
     fn activate_switch(ref self: TContractState);
 }
 
 /// Simple contract for managing count.
 #[starknet::contract]
-mod Agggregator {
+pub mod Aggregator {
     use cohort_4::counter::{ICounterDispatcher, ICounterDispatcherTrait};
     use cohort_4::killswitch::{IKillSwitchDispatcher, IKillSwitchDispatcherTrait};
-    use starknet::ContractAddress;
+    use cohort_4::ownable::{IOwnableDispatcher, IOwnableDispatcherTrait};
     use core::num::traits::Zero;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-
+    use starknet::{ContractAddress, get_caller_address};
+    use crate::events::*;
+    use super::*;
 
     #[storage]
     struct Storage {
         count: u32,
         counter: ContractAddress,
         killswitch: ContractAddress,
+        ownable: ContractAddress,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct CountIncreased {
+        pub new_count: u32,
+        pub caller: ContractAddress,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct CounterCountIncreased {
+        pub new_counter: u32,
+        pub caller: ContractAddress,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct CountDecreasedByOne {
+        pub new_count: u32,
+        pub caller: ContractAddress,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct SwitchStatus {
+        pub status: bool,
+        pub caller: ContractAddress,
     }
 
 
@@ -41,68 +66,64 @@ mod Agggregator {
         SwitchStatus: SwitchStatus,
     }
 
-    #[derive(Drop, Serde, starknet::Event)]
-    pub struct CountIncreased {
-        amount: u32,
-    }
-
-    #[derive(Drop, Serde, starknet::Event)]
-    pub struct CounterCountIncreased {
-        amount: u32,
-    }
-
-    #[derive(Drop, Serde, starknet::Event)]
-    pub struct CountDecreasedByOne {
-        pub previous_count: u32,
-    }
-
-    #[derive(Drop, Serde, starknet::Event)]
-    pub struct SwitchStatus {
-        pub get_status: bool,
-    }
-
     #[constructor]
-    fn constructor(ref self: ContractState, counter: ContractAddress, killswitch: ContractAddress) {
+    fn constructor(
+        ref self: ContractState,
+        counter: ContractAddress,
+        killswitch: ContractAddress,
+        ownable: ContractAddress,
+    ) {
+        //Validate the addresses to be sure
+        self.validate_contract_addresses(counter, killswitch, ownable);
+
         self.counter.write(counter);
         self.killswitch.write(killswitch);
-        //Assert address is not 0
-        assert(!self.counter.read().is_zero(), 'Counter address cannot be 0');
-        assert(!self.killswitch.read().is_zero(), 'KillSwitch address cannot be 0');
-        //Assert count is not kill_switch
-        assert(
-            self.counter.read() != self.killswitch.read(),
-            'Odd! Counter is KillSwitch'
-        );
+        self.ownable.write(ownable);
     }
-
 
     #[abi(embed_v0)]
     impl AggregatorImpl of super::IAggregator<ContractState> {
         fn increase_count(ref self: ContractState, amount: u32) {
+            // Check ownership with internal function
+            self.assert_only_owner();
             assert(amount > 0, 'Amount cannot be 0');
+
             let counter = ICounterDispatcher { contract_address: self.counter.read() };
             let counter_count = counter.get_count();
-            self.count.write(counter_count + amount);
-            self.emit(CountIncreased { amount });
+            let new_count = counter_count + amount;
+            self.count.write(new_count);
+
+            self.emit(CountIncreased { new_count: amount, caller: get_caller_address() });
         }
 
         fn increase_counter_count(ref self: ContractState, amount: u32) {
+            // Check ownership with internal function
+
+            self.assert_only_owner();
+
             let killswitch: IKillSwitchDispatcher = IKillSwitchDispatcher {
                 contract_address: self.killswitch.read(),
             };
-            assert(killswitch.get_status(), 'should be active');
+            assert(killswitch.get_status(), 'Oops! Switch is off');
             ICounterDispatcher { contract_address: self.counter.read() }.increase_count(amount);
-            self.emit(CounterCountIncreased { amount });
+            self.emit(CounterCountIncreased { new_counter: amount, caller: get_caller_address() });
         }
 
         fn decrease_count_by_one(ref self: ContractState) {
+            // Check ownership with internal function
+            self.assert_only_owner();
+
             let current_count = self.get_count();
-            assert!(current_count != 0, "Amount cannot be 0");
-            self.count.write(current_count - 1);
-            self.emit(CountDecreasedByOne { previous_count: current_count });
+            assert(current_count != 0, 'Count cannot be 0');
+            let new_count1 = current_count - 1;
+            self.count.write(new_count1);
+
+            self.emit(CountDecreasedByOne { new_count: new_count1, caller: get_caller_address() });
         }
 
         fn activate_switch(ref self: ContractState) {
+            self.assert_only_owner();
+
             let killswitch: IKillSwitchDispatcher = IKillSwitchDispatcher {
                 contract_address: self.killswitch.read(),
             };
@@ -110,11 +131,42 @@ mod Agggregator {
             if !killswitch.get_status() {
                 killswitch.switch()
             }
-            self.emit(SwitchStatus { get_status: true });
+
+            self.emit(SwitchStatus { status: true, caller: get_caller_address() });
         }
 
         fn get_count(self: @ContractState) -> u32 {
+            self.assert_only_owner();
             self.count.read()
+        }
+    }
+
+    #[generate_trait]
+    impl OwnerHelpers of OwnersHelpersTrait {
+        //check owner is caller
+        fn assert_only_owner(self: @ContractState) {
+            let caller = get_caller_address();
+            // Dispatcher to interact with contract
+            let ownable = IOwnableDispatcher { contract_address: self.ownable.read() };
+            let owner = ownable.get_owner();
+            assert(caller == owner, 'Caller is not owner');
+        }
+
+        fn validate_contract_addresses(
+            self: @ContractState,
+            counter: ContractAddress,
+            killswitch: ContractAddress,
+            ownable: ContractAddress,
+        ) {
+            //check that none is address zero
+            assert(counter.is_non_zero(), 'Counter address cannot be 0');
+            assert(killswitch.is_non_zero(), 'KillSwitch address cannot be 0');
+            assert(ownable.is_non_zero(), 'Ownable address cannot be 0');
+
+            //check there is no duplicate
+            assert(counter != killswitch, 'counter cant be killswitch');
+            assert(counter != ownable, 'counter cant be ownable');
+            assert(killswitch != ownable, 'killswitch cant be ownable');
         }
     }
 }
