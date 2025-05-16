@@ -1,17 +1,7 @@
-/// Interface representing `HelloContract`.
-/// This interface allows modification and retrieval of the contract count.
-#[starknet::interface]
-pub trait IKillSwitch<TContractState> {
-    /// Increase contract count.
-    fn switch(ref self: TContractState);
-
-    /// Retrieve contract count.
-    fn get_status(self: @TContractState) -> bool;
-}
-
 /// Simple contract for managing count.
 #[starknet::contract]
 mod KillSwitch {
+    use cohort_4::interfaces::Ikillswitch::IKillSwitch;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
 
     #[storage]
@@ -21,7 +11,7 @@ mod KillSwitch {
 
 
     #[abi(embed_v0)]
-    impl KillSwitchImpl of super::IKillSwitch<ContractState> {
+    impl KillSwitchImpl of IKillSwitch<ContractState> {
         fn switch(ref self: ContractState) {
             // assert(amount != 0, 'Amount cannot be 0');
             self.status.write(!self.status.read());
