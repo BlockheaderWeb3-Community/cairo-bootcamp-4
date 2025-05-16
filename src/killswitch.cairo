@@ -11,7 +11,7 @@ pub trait IKillSwitch<TContractState> {
 
 /// Simple contract for managing count.
 #[starknet::contract]
-mod KillSwitch {
+pub mod KillSwitch {
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
 
     #[storage]
@@ -19,12 +19,24 @@ mod KillSwitch {
         status: bool,
     }
 
+    #[event]
+    #[derive(Drop, starknet::Event)]
+   pub enum Event{
+        EventSwitched: EventSwitched
+    }
+
+    #[derive(Drop, starknet::Event)]
+   pub struct EventSwitched{
+        pub status: bool
+    }
 
     #[abi(embed_v0)]
     impl KillSwitchImpl of super::IKillSwitch<ContractState> {
         fn switch(ref self: ContractState) {
-            // assert(amount != 0, 'Amount cannot be 0');
             self.status.write(!self.status.read());
+            self.emit(Event::EventSwitched(EventSwitched{
+                status: self.status.read()
+            }))
         }
 
 
