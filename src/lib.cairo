@@ -1,22 +1,30 @@
-pub mod hello;
 pub mod IHello;
 pub mod INumber;
-pub mod counter;
-pub mod killswitch;
-pub mod aggregator;
 
+pub mod aggregator;
+pub mod counter;
+pub mod hello;
+pub mod killswitch;
+pub mod ownable;
+
+pub mod interfaces {
+    pub mod Iaggregator;
+    pub mod Icounter;
+    pub mod Ikillswitch;
+    pub mod Iowner;
+}
 
 
 fn main() {
     // Function calls (Uncomment to execute them)
     // say_name("Sylvia Nnoruka!");
     // intro_to_felt();
-    
+
     let num_1 = 5;
     let num_2 = 10;
     let sum = sum_num(num_1, num_2);
     println!("The sum of {} and {} is = {}", num_1, num_2, sum);
-    
+
     // check_u16(6553); // Uncomment if needed
     is_greater_than_50(3);
 }
