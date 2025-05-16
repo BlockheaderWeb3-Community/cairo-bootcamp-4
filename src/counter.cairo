@@ -14,12 +14,30 @@ pub trait ICounter<TContractState> {
 
 /// Simple contract for managing count.
 #[starknet::contract]
-mod Counter {
+pub mod Counter {
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+
 
     #[storage]
     struct Storage {
         count: u32,
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    pub enum Event {
+        CounterIncreased: CounterWasIncreased,
+        CounterDecreased: CounterWasDecreased,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct CounterWasIncreased {
+        pub amount: u32,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct CounterWasDecreased {
+        pub amount: u32,
     }
 
     #[abi(embed_v0)]
@@ -28,16 +46,18 @@ mod Counter {
             assert(amount > 0, 'Amount cannot be 0');
             let counter_count = self.get_count();
             self.count.write(counter_count + amount);
+            self.emit(Event::CounterIncreased(CounterWasIncreased { amount: amount }));
         }
 
         fn decrease_count_by_one(ref self: ContractState) {
             let current_count = self.get_count();
             assert(current_count > 0, 'Amount cannot be 0');
             self.count.write(current_count - 1);
+            self.emit(Event::CounterDecreased(CounterWasDecreased { amount: 1 }));
         }
 
         fn get_count(self: @ContractState) -> u32 {
-            self.count.read()   
+            self.count.read()
         }
     }
 }
