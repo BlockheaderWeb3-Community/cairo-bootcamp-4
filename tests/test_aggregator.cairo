@@ -1,140 +1,240 @@
-use cohort_4::aggregator::{IAggregatorDispatcher, IAggregatorDispatcherTrait, IAggregatorSafeDispatcher, Agggregator};
-use cohort_4::IOwnable::{IOwnableDispatcher, IOwnableDispatcherTrait, IOwnableSafeDispatcher};
+use cohort_4::aggregator::{IAggregatorDispatcher, IAggregatorDispatcherTrait};
+use cohort_4::counter::{
+    ICounterDispatcher, ICounterDispatcherTrait, ICounterSafeDispatcher,
+    ICounterSafeDispatcherTrait,
+};
 use cohort_4::killswitch::{IKillSwitchDispatcher, IKillSwitchDispatcherTrait};
-use cohort_4::counter::{ICounterDispatcher,ICounterDispatcherTrait};
+use cohort_4::IOwnable::{IOwnableDispatcher, IOwnableDispatcherTrait};
+use snforge_std::{ContractClassTrait, DeclareResultTrait, declare, start_cheat_caller_address, stop_cheat_caller_address};
 use starknet::ContractAddress;
-use snforge_std::{declare, ContractClassTrait, DeclareResultTrait, start_cheat_caller_address, spy_events, EventSpyAssertionsTrait};
-
-use cohort_4::aggregator::Agggregator::{increased_aggregator_count, Event};
+use starknet::contract_address_const;
 
 
-
-fn deploy_ownable_contract(initial_address: ContractAddress) ->  (IOwnableDispatcher, ContractAddress, ) {
-    let contract = declare("Ownable").unwrap().contract_class();
-
-    // serialize call_data
-    let mut calldata: Array<felt252> = array![];
-    initial_address.serialize(ref calldata);
-
-    let (contract_address, _) = contract.deploy(@calldata).unwrap();
-    let ownable = IOwnableDispatcher{contract_address};
-    let safe_owner = IOwnableSafeDispatcher{contract_address};
-
-    return (ownable, contract_address);
-}
-
-fn deploy_counter_contract() -> (ICounterDispatcher, ContractAddress) {
-    let countract_name: ByteArray = "Counter";
-    let contract = declare(countract_name).unwrap().contract_class();
-    let (contract_address, _) = contract.deploy(@ArrayTrait::new()).unwrap();
-    let counter = ICounterDispatcher{contract_address};
-    return (counter, contract_address);
-}
-
-fn deploy_killswitch_contract()-> (IKillSwitchDispatcher, ContractAddress){
-    let contract = declare("KillSwitch").unwrap().contract_class();
-    let (contract_address, _) = contract.deploy(@array![]).unwrap();
-    let killswitch = IKillSwitchDispatcher{contract_address};
-
-    return (killswitch, contract_address);
-}
-
-// deploy aggregator
-fn deploy_aggregator() -> (IAggregatorDispatcher, IAggregatorSafeDispatcher, ContractAddress, ContractAddress) {
+fn deploy_contract() -> (ICounterDispatcher, IKillSwitchDispatcher, IOwnableDispatcher, IAggregatorDispatcher , ContractAddress) {
    
-    let (ownable, ownable_address) = deploy_ownable_contract(OWNER());
-    let owner_address = ownable.get_owner();  // Get the actual owner address
-    
-    let (_, counter_address) = deploy_counter_contract();
-    let (_, killswitch_address) = deploy_killswitch_contract();
+   // owner address 
+   let owner_address: ContractAddress = contract_address_const::<'1'>();
+   
+   
+    //counter deployment
+    let counter_countract_name: ByteArray = "Counter";
+    let contract = declare(counter_countract_name).unwrap().contract_class();
+    let (counter_contract_address, _) = contract.deploy(@ArrayTrait::new()).unwrap();
+    let counter_dispatcher = ICounterDispatcher { contract_address: counter_contract_address };
 
-    let contract = declare("Agggregator").unwrap().contract_class();
+    //killswitch deployment
+    let killswitch_contract_name: ByteArray = "KillSwitch";
+    let killswitch_contract = declare(killswitch_contract_name).unwrap().contract_class();
+    let (killswitch_contract_address, _) = killswitch_contract.deploy(@ArrayTrait::new()).unwrap();
+    let killswitch_dispatcher = IKillSwitchDispatcher {
+        contract_address: killswitch_contract_address,
+    };
 
-    // serialize call data
-    let mut calldata: Array<felt252> = array![];
-    counter_address.serialize(ref calldata);
-    killswitch_address.serialize(ref calldata); 
-    ownable_address.serialize(ref calldata);  // Use the actual ownable contract address
+    //ownable deployment
+    let ownable_contract_name: ByteArray = "Ownable";
+    let ownable_contract = declare(ownable_contract_name).unwrap().contract_class();
+    // Deploy with owner_address as the initial owner
+    let (ownable_contract_address, _) = ownable_contract
+        .deploy(@array![owner_address.into()])
+        .unwrap();
+    let ownable_dispatcher = IOwnableDispatcher {
+        contract_address: ownable_contract_address,
+    };
 
-    let(contract_address, _) = contract.deploy(@calldata).unwrap();
-    let aggregator = IAggregatorDispatcher{contract_address};
-    let safe_aggregator = IAggregatorSafeDispatcher{contract_address};
+    //aggregator deployment
+    let aggregator = declare("Agggregator").unwrap().contract_class();
+    let (aggregator_contract_address, _) = aggregator
+        .deploy(@array![counter_contract_address.into(), killswitch_contract_address.into(),  ownable_contract_address.into()])
+        .unwrap();
 
-    return (aggregator, safe_aggregator, contract_address, owner_address);
+    let aggregator_dispatcher = IAggregatorDispatcher {
+        contract_address: aggregator_contract_address,
+    };
+
+    (counter_dispatcher, killswitch_dispatcher, ownable_dispatcher, aggregator_dispatcher, owner_address)
 }
-
-fn OWNER() -> ContractAddress{
-    'OWNER'.try_into().unwrap()
-}
-
-// fn ADDRESS_2() -> ContractAddress {
-//     let owner_address: ContractAddress = 'OWNER_1'.try_into().unwrap();
-//     owner_address
-// }
-
-// fn ADDRESS_3() -> ContractAddress {
-//     let owner_address: ContractAddress = 'OWNER_2'.try_into().unwrap();
-//     owner_address
-// }
 
 #[test]
-fn test_get_count(){
-    let (aggregator, _, _, _) = deploy_aggregator();
+fn test_increase_count() {
+    let (counter_dispatcher, _, _, _, _) = deploy_contract();
 
-    let aggregator_current_count = aggregator.get_count();
-    assert(aggregator_current_count == 0, 'Aggregator count should be zero');
+    let balance_before = counter_dispatcher.get_count();
+    assert(balance_before == 0, 'Invalid balance');
+
+    counter_dispatcher.increase_count(42);
+
+    let balance_after = counter_dispatcher.get_count();
+    assert(balance_after == 42, 'Invalid balance');
 }
 
 #[test]
-fn test_aggregator_increase_count() {
-    // Get all values from the single deployment
-    let (aggregator, _, aggregator_address, owner_address) = deploy_aggregator();
+fn test_increase_count_aggregator_as_owner() {
+    let (_, _, _, aggregator_dispatcher, owner_address) = deploy_contract();
+
+         
+ 
+   
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, owner_address);
+
     
-    let aggregator_count_1 = aggregator.get_count();
-    assert(aggregator_count_1 == 0, 'Aggregator count should be zero');
+   
+
+    let balance_before = aggregator_dispatcher.get_count();
+    assert(balance_before == 0, 'Invalid balance');
+
+ 
+    aggregator_dispatcher.increase_count(42);
+
+    let balance_after = aggregator_dispatcher.get_count();
+    assert(balance_after == 42, 'Invalid balance');
     
-    // Use the owner address to make the call
-    start_cheat_caller_address(aggregator_address, owner_address);
-    
-    aggregator.increase_count(20);
-    
-    let aggregator_count_2 = aggregator.get_count();
-    assert(aggregator_count_2 == 20, 'Aggregator count invalid');
+  
+    stop_cheat_caller_address(aggregator_dispatcher.contract_address,);
 }
 
-// #[test]
-// #[feature("safe_dispatcher")]
-// fn test_aggregator_increase_count_by_zero(){
-//     let (aggregator, safe_aggregator, aggregator_address, owner_address) = deploy_aggregator();
-
-//     let aggregator_count_1 = aggregator.get_count();
-//     assert(aggregator_count_1== 0, 'Aggregator count should be zero');
-
-//      // impersonate owner 
-//      start_cheat_caller_address(aggregator_address, owner_address);
-    
-//      match safe_aggregator.increase_count(0){
-//         Result::Ok(_) => panic!("increasing by zero should panic"),
-//         Result::Err(panic_data) => assert(*panic_data.at(0) == 'Amount cannot be 0', *panic_data.at(0))
-//     }
-// } 
-
-// #[test]
-// fn test_aggregator_increase_count_event(){
-    
-//     let (aggregator, _, aggregator_address, owner_address) = deploy_aggregator();
-//     let mut spy = spy_events();
-
-//     let aggregator_count_1 = aggregator.get_count();
-//     assert(aggregator_count_1 == 0, 'Aggregator count should be zero');
-    
-//     // Use the owner address to make the call
-//     start_cheat_caller_address(aggregator_address, owner_address);
-    
-//     aggregator.increase_count(20);
+#[test]
+#[should_panic(expected: 'Only owner can increase count')]
+fn test_increase_count_aggregator_as_non_owner() {
+    let (_, _, _, aggregator_dispatcher, _) = deploy_contract();
 
     
-//     spy.assert_emitted(@array![(owner_address,
-//         Event::increased_aggregator_count(increased_aggregator_count{ amount: 20, caller_address: owner_address}),
-//     ),])
-// }
+    let non_owner_address: ContractAddress = contract_address_const::<'2'>();
+    
+   
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, non_owner_address);
+  
+
+    aggregator_dispatcher.increase_count(42);
+
+
+    let balance_after = aggregator_dispatcher.get_count();
+    assert(balance_after == 0, 'you are not the owner');
+    
+    stop_cheat_caller_address(aggregator_dispatcher.contract_address,);
+}
+
+#[test]
+#[feature("safe_dispatcher")]
+fn test_cannot_increase_balance_with_zero_value() {
+    let (counter_dispatcher, _, _, _, _) = deploy_contract();
+
+    let balance_before = counter_dispatcher.get_count();
+    assert(balance_before == 0, 'Invalid balance');
+
+    let safe_dispatcher = ICounterSafeDispatcher {
+        contract_address: counter_dispatcher.contract_address,
+    };
+
+    match safe_dispatcher.increase_count(0) {
+        Result::Ok(_) => core::panic_with_felt252('Should have panicked'),
+        Result::Err(panic_data) => {
+            assert(*panic_data.at(0) == 'Amount cannot be 0', *panic_data.at(0));
+        },
+    };
+}
+
+
+#[test]
+fn test_increase_counter_count() {
+    let (counter_dispatcher, _, _, aggregator_dispatcher, owner_address) = deploy_contract();
+
+  
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, owner_address);
+   
+
+    let initial_count = counter_dispatcher.get_count();
+    assert(initial_count == 0, 'invalid initial count');
+
+   
+    aggregator_dispatcher.activate_switch();
+   
+    aggregator_dispatcher.increase_counter_count(42);
+
+    let final_count = counter_dispatcher.get_count();
+    assert(final_count == 42, 'counter not increased correctly');
+}
+
+#[test]
+fn test_decrease_count_by_one_aggregator() {
+    let (counter_dispatcher, _, _, aggregator_dispatcher, owner_address) = deploy_contract();
+
+
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, owner_address);
+    let count_before = aggregator_dispatcher.get_count();
+    assert(count_before == 0, 'invalid count');
+
+   
+
+    aggregator_dispatcher.increase_count(20);
+    aggregator_dispatcher.decrease_count_by_one();
+
+    let count_after = aggregator_dispatcher.get_count();
+    assert(count_after == 19, 'incorrect count');
+}
+
+#[test]
+fn test_increase_activate_switch() {
+    let (_, killswitch_dispatcher, _, aggregator_dispatcher, owner_address) = deploy_contract();
+
+    let non_owner_address: ContractAddress = contract_address_const::<'2'>();
+
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, owner_address);
+    let status = killswitch_dispatcher.get_status();
+    assert(!status, 'failed');
+
+    aggregator_dispatcher.activate_switch();
+
+    stop_cheat_caller_address(aggregator_dispatcher.contract_address,);
+
+    let status_after = killswitch_dispatcher.get_status();
+    assert(status_after, 'invalid status');
+}
+
+
+#[test]
+#[should_panic(expect: 'you are not the owner' )]
+fn test_increase_activate_switch_non_owner() {
+
+    let (_, killswitch_dispatcher, _, aggregator_dispatcher, _) = deploy_contract();
+
+    let non_owner_address: ContractAddress = contract_address_const::<'2'>();
+
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, non_owner_address);
+    let status = killswitch_dispatcher.get_status();
+    assert(!status, 'failed');
+
+    aggregator_dispatcher.activate_switch();
+
+    stop_cheat_caller_address(aggregator_dispatcher.contract_address,);
+
+    let status_after = killswitch_dispatcher.get_status();
+    assert(status_after, 'invalid status');
+
+}
+
+#[test]
+#[should_panic(expect: 'Amount cannot be 0')]
+fn test_increase_count_by_zero() {
+    let (_, killswitch_dispatcher, _, aggregator_dispatcher, _) = deploy_contract();
+    
+
+    let count_after = aggregator_dispatcher.get_count();
+    assert(count_after == 0, 'incorrect count');
+
+    aggregator_dispatcher.increase_count(0);
+}
+
+#[test]
+#[should_panic(expect: 'should be active')]
+fn test_increase_counter_count_error() {
+    let (_, killswitch_dispatcher, _, aggregator_dispatcher, _) = deploy_contract();
+
+    let non_owner_address: ContractAddress = contract_address_const::<'2'>();
+
+    start_cheat_caller_address(aggregator_dispatcher.contract_address, non_owner_address);
+
+    let status_before = killswitch_dispatcher.get_status();
+    assert(status_before, 'invalid status');
+
+    aggregator_dispatcher.increase_counter_count(42);
+}
